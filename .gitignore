@@ -133,4 +133,10 @@ dmypy.json
 data/test.jsonl
 data/sample_submission.csv
 data/train.jsonl
-conf/local
+conf/local/
+conf/test/
+docs
+
+# Ignore all log files and directory
+logs/
+.log
