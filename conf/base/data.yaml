@@ -1,0 +1,8 @@
+train:
+  raw: <Path to train.jsonl>
+
+test:
+  raw: <Path to test.jsonl>
+
+sub_sample:
+  raw: <Path to submission.csv>
