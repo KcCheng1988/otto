@@ -1,8 +1,9 @@
 import os
+
 import logging
 import logging.config
 from logging import Logger
-from typing import Dict
+
 from config import CONF_DIR
 from otto.utils.io import load_yaml
 

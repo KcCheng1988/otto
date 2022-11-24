@@ -19,6 +19,7 @@ import pandas as pd
 
 from otto.preprocessing.sample import view_raw
 
+
 # Configure logger
 from . import configure_logger
 logger = configure_logger("tab")
@@ -85,5 +86,10 @@ def to_csv(ss_list : List[Dict], dest_f : str) -> None:
 
 
 if __name__ == "__main__":
-    sample = view_raw(5, "test")
-    to_csv(sample, "test.csv")    
+    from . import CONF_DATA
+
+    test_sample = view_raw(100, "test")
+    to_csv(test_sample, CONF_DATA["test"]["sample"]["csv"])    
+
+    train_sample = view_raw(100, "train")
+    to_csv(train_sample, CONF_DATA["train"]["sample"]["csv"])

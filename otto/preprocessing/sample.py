@@ -46,3 +46,6 @@ def view_raw(n_lines : int =10, mode : str = "train") -> List[Dict]:
 
 if __name__ == "__main__":
     sample = view_raw(3, "train")
+    for i, item in enumerate(sample):
+        data = json.dumps(item)
+        logger.info("Item %d:\n %s", i+1, data)
