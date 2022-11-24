@@ -1,8 +1,16 @@
 train:
   raw: <Path to train.jsonl>
+  raw_csv: <Path to tabulated train.csv file>
+  sample:
+    csv: <<Path to train_sample.csv file>
+    jsonl: <Path to train_sample.jsonl file>
 
 test:
   raw: <Path to test.jsonl>
+  raw_csv: <Path to tabulated test.csv file>
+  sample:
+    csv: <Path to test_sample.csv file>
+    jsonl: <Path to test_sample.jsonl file>
 
 sub_sample:
   raw: <Path to submission.csv>
