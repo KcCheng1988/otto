@@ -130,9 +130,7 @@ dmypy.json
 >>>>>>> origin/master
 
 # Custom project files or directories to ignore
-data/test.jsonl
-data/sample_submission.csv
-data/train.jsonl
+data/
 conf/local/*.yaml
 conf/test/
 docs
