@@ -138,3 +138,6 @@ docs
 # Ignore all log files and directory
 logs/
 .log
+
+# Ignore .vscode directory
+.vscode/
