@@ -6,6 +6,7 @@ import plotly.graph_objs as go
 
 import pyspark
 from pyspark.sql import SparkSession
+from pyspark.sql import Window
 from pyspark.sql.types import StructType, StructField, IntegerType, LongType, StringType
 import pyspark.sql.functions as F
 
@@ -62,6 +63,36 @@ def get_type_dist(df : pyspark.sql.DataFrame) -> pd.DataFrame:
 
     return pd_df
 
+def indicate_types(df : pyspark.sql.DataFrame) -> pyspark.sql.DataFrame:
+
+    # df = (
+    #     df.groupBy("session")
+    #     .agg(
+    #         F.collect_set("type").alias("type_set")
+    #     )
+    #     .select(
+    #         "session",
+    #         F.when(F.lit("clicks").isin("type_set"), 1).otherwise(0).alias("has_click"),
+    #         F.when(F.lit("carts").isin("type_set"), 1).otherwise(0).alias("has_cart"),
+    #         F.when(F.lit("orders").isin("type_set"), 1).otherwise(0).alias("has_order")
+    #     )
+    # )
+    df = (
+        df.groupBy("session")
+        .agg(
+            F.collect_set("type").alias("type_set")
+        )
+        .select(
+            "session",
+            F.when(F.array_contains("type_set", "clicks"), 1).otherwise(0).alias("has_click"),
+            F.when(F.array_contains("type_set", "carts"), 1).otherwise(0).alias("has_cart"),
+            F.when(F.array_contains("type_set", "orders"), 1).otherwise(0).alias("has_order")
+        )
+    )
+
+    return df
+
+
 def make_bar(train_pd : pd.DataFrame, test_pd : pd.DataFrame, html_f : str):
     data = [
         go.Bar(x=train_pd["type"], y=train_pd["type_dist"], text=train_pd["type_count"], name="train"),
@@ -85,24 +116,34 @@ if __name__ == "__main__":
     from . import CONF_DATA
     from . import HTML_DIR
 
-    train_csv = CONF_DATA["train"]["raw_csv"]
-    test_csv = CONF_DATA["test"]["raw_csv"]
-    logger.info("Train data : %s", train_csv)
-    logger.info("Test data : %s", test_csv)
+    # train_csv = CONF_DATA["train"]["raw_csv"]
+    # test_csv = CONF_DATA["test"]["raw_csv"]
+    # logger.info("Train data : %s", train_csv)
+    # logger.info("Test data : %s", test_csv)
+
+    # spark = start_spark()
+    # logger.debug("SQL spark session initiated.")
+
+    # df_train = read_file(spark, train_csv)
+    # pd_train = get_type_dist(df_train)
+    # logger.info("Distribution of event types in train data:\n" + str(pd_train.head()))
+
+    # df_test = read_file(spark, test_csv)
+    # pd_test = get_type_dist(df_test)
+    # logger.info("Distribution of event types in test data:\n" + str(pd_test.head()))
+    
+    # html_f = os.path.join(HTML_DIR, "dist.html")
+    # make_bar(pd_train, pd_test, html_f)
+    # logger.info("Distribution barcharts for train and test data generated in %s", html_f)
 
     spark = start_spark()
-    logger.debug("SQL spark session initiated.")
-
-    df_train = read_file(spark, train_csv)
-    pd_train = get_type_dist(df_train)
-    logger.info("Distribution of event types in train data:\n" + str(pd_train.head()))
-
-    df_test = read_file(spark, test_csv)
-    pd_test = get_type_dist(df_test)
-    logger.info("Distribution of event types in test data:\n" + str(pd_test.head()))
     
-    html_f = os.path.join(HTML_DIR, "dist.html")
-    make_bar(pd_train, pd_test, html_f)
-    logger.info("Distribution barcharts for train and test data generated in %s", html_f)
+    train_csv = CONF_DATA["test"]["raw_csv"]
+
+    train_df = read_file(spark, train_csv)
+
+    train_df = indicate_types(train_df) 
+
+    train_df.show(20)
 
     spark.stop()
